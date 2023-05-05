@@ -1,0 +1,2 @@
+clear
+mkdir -p out
