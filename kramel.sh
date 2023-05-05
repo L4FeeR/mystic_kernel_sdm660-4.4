@@ -1,4 +1,10 @@
 clear
+echo ""
+echo ""
+echo "  patch the source with nh_patches/*.patch to get nh stuff workin"
+echo ""
+echo ""
+sleep 3
 mkdir -p out
 
 #Exports
