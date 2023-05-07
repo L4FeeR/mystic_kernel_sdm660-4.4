@@ -1,5 +1,7 @@
 #patching the source with nethunter patches, in order to work
-echo
+echo "  [+] Setting patch files...
+cp nh_patches/* ./
+echo "  [+] Setting up Done.
 echo "  [+] Patching..."
 echo
 patch -p1 < ath9k:_Add_cast_to_u8_to_FREQ2FBIN_macro.patch
