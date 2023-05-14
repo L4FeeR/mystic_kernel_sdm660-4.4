@@ -10,6 +10,7 @@ patch -p1 < nh_patches/fix-header.patch
 patch -p1 < nh_patches/fix-rxlock-spin.patch
 patch -p1 < nh_patches/injection.patch
 patch -p1 < nh_patches/rndis-fix.patch
+patch -p1 < nh_patches/add fix-for-docker-error.patch
 echo
 echo "   [+] Patching Done."
 echo
