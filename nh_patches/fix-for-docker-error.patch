@@ -1,0 +1,53 @@
+From a42d7f4d691183ae5579e221e4880c248682a25e Mon Sep 17 00:00:00 2001
+From: enesutku07 <afyonluenes@hotmail.com>
+Date: Fri, 26 Jun 2020 12:49:45 +0300
+Subject: [PATCH] apparmor/crypto.c:37:8: error fixed
+
+tissot/security/apparmor/crypto.c:37:8: error: fields must have a constant size: 'variable length array in structure' extension will never be supported
+                char ctx[crypto_shash_descsize(apparmor_tfm)];
+---
+ security/apparmor/crypto.c | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
+
+diff --git a/security/apparmor/crypto.c b/security/apparmor/crypto.c
+index b75dab0df1cb..57fbe757260d 100644
+--- a/security/apparmor/crypto.c
++++ b/security/apparmor/crypto.c
+@@ -32,10 +32,7 @@ unsigned int aa_hash_size(void)
+ int aa_calc_profile_hash(struct aa_profile *profile, u32 version, void *start,
+ 			 size_t len)
+ {
+-	struct {
+-		struct shash_desc shash;
+-		char ctx[crypto_shash_descsize(apparmor_tfm)];
+-	} desc;
++		SHASH_DESC_ON_STACK(desc, apparmor_tfm);
+ 	int error = -ENOMEM;
+ 	u32 le32_version = cpu_to_le32(version);
+ 
+@@ -49,19 +46,19 @@ int aa_calc_profile_hash(struct aa_profile *profile, u32 version, void *start,
+ 	if (!profile->hash)
+ 		goto fail;
+ 
+-	desc.shash.tfm = apparmor_tfm;
+-	desc.shash.flags = 0;
++	desc->tfm = apparmor_tfm;
++	desc->flags = 0;
+ 
+-	error = crypto_shash_init(&desc.shash);
++	error = crypto_shash_init(desc);
+ 	if (error)
+ 		goto fail;
+-	error = crypto_shash_update(&desc.shash, (u8 *) &le32_version, 4);
++	error = crypto_shash_update(desc, (u8 *) &le32_version, 4);
+ 	if (error)
+ 		goto fail;
+-	error = crypto_shash_update(&desc.shash, (u8 *) start, len);
++	error = crypto_shash_update(desc, (u8 *) start, len);
+ 	if (error)
+ 		goto fail;
+-	error = crypto_shash_final(&desc.shash, profile->hash);
++	error = crypto_shash_final(desc, profile->hash);
+ 	if (error)
+ 		goto fail;
+ 
